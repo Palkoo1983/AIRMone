@@ -75,7 +75,12 @@ app.mount("/airm", AIRM_APP)
 
 # --- 2) UTÁNA a statikus site a gyökről
 app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="static")
+# --- extra: /static mappa külön mount, hogy a /static/overrides.css 200 legyen
+from fastapi.staticfiles import StaticFiles as _StaticFiles  # ha fent már importáltad, ez kihagyható
 
+STATIC_DIR = (BASE_DIR.parent / "static").resolve()
+if STATIC_DIR.exists():
+    app.mount("/static", _StaticFiles(directory=str(STATIC_DIR), html=False), name="extra_static")
 # Health
 @app.get("/healthz")
 def healthz():
