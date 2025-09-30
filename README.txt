@@ -29,3 +29,8 @@ Az AIRM UI: <http://127.0.0.1:8000/airm/ui>
 - Health check path: `/healthz`
 
 Kész. A "Kockázatelemzés" oldal az `/airm/ui`-t fogja betölteni iframe-ben.
+
+
+## Render tip
+Ha a Render a gyökérben keresi a requirements.txt-t, ebben a v2 csomagban a gyökérben is van,
+amely a `requirements.txt`, amely az `app/requirements.txt`-re hivatkozik.
