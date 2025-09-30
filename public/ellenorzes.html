@@ -36,9 +36,22 @@ a{color:#0b5fc0} a:hover{color:#084a99}
 <h1>AIRM</h1>
 <nav><a href="/index.html">Bemutatkozó</a> • <a href="/kitekinto.html">Gazdasági kitekintő</a> • <a href="/arazas.html">Szolgáltatások</a> • <a href="/ellenorzes.html">Kockázatelemzés 1 perc alatt</a> • <a href="/kapcsolat.html">Kapcsolat</a></nav>
 <p><span id="airmStatus" class="badge">AIRM modul: ellenőrzés...</span></p>
-<iframe id="airmFrame" src="" style="width:100%;height:80vh;border:1px solid #e6ebf2;border-radius:12px;box-shadow:0 8px 30px rgba(2,12,27,.06)"></iframe></iframe>
+<iframe id="airmFrame" src="/airm/ui" style="width:100%;height:80vh;border:1px solid #e6ebf2;border-radius:12px;box-shadow:0 8px 30px rgba(2,12,27,.06)"></iframe>
 </main>
-<script>(function(){var ifr=document.querySelector('iframe[src^="http://127.0.0.1:8000"]');var b=document.getElementById('airmStatus');if(!ifr||!b) return;var d=false;function ok(){if(d) return;d=true;b.textContent='AIRM modul: elérhető';b.classList.add('ok');}function fail(){if(d) return;d=true;b.textContent='AIRM modul: nem érhető el';b.classList.add('bad');}ifr.addEventListener('load', ok);setTimeout(function(){if(!d) fail();}, 4000);})();</script>
+<script>
+(function () {
+  var ui = (window.AIRM_UI) ? window.AIRM_UI : (location.origin + "/airm/ui");
+  var ifr = document.getElementById("airmFrame");
+  if (ifr && (!ifr.src || ifr.src === "" || ifr.src === "about:blank")) {
+    ifr.src = ui;
+  }
+  // státusz jelzés (opcionális)
+  fetch("/airm/healthz").then(r => r.json()).then(j => {
+    var b = document.getElementById("airmStatus");
+    if (b) b.textContent = (j && j.airm_mounted) ? "AIRM modul: OK" : "AIRM modul: ellenőrzés…";
+  }).catch(() => {});
+})();
+</script>
 <script>(function(){try{var L=document.querySelectorAll('nav a'),p=location.pathname.toLowerCase();L.forEach(a=>{var h=(a.getAttribute('href')||'').toLowerCase();if(p.endsWith(h))a.classList.add('active');if(h==='/index.html'&&(p==='/'||p==''))a.classList.add('active');});}catch(e){}})();</script>
 
 <script>
