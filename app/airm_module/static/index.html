@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIRM – Kockázatkezelés</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>AIRM – Kockázatkezelés</h1>
+    <div class="top-actions">
+      <form id="uploadForm">
+        <input type="file" id="pdf" name="file" accept="application/pdf" required />
+        <select id="lang">
+          <option value="hu" selected>HU</option>
+          <option value="en">EN</option>
+          <option value="both">HU+EN</option>
+        </select>
+        <button type="submit" id="btnPreview">Előnézet</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="grid" class="grid" style="display:none;">
+      <div class="card"><h2>Mérleg (BS) – Előző év</h2><div id="bs_prev" class="kv-grid"></div></div>
+      <div class="card"><h2>Mérleg (BS) – Tárgyév</h2><div id="bs" class="kv-grid"></div></div>
+      <div class="card"><h2>PL – Előző év</h2><div id="pl_prev" class="kv-grid"></div></div>
+      <div class="card"><h2>PL – Tárgyév</h2><div id="pl" class="kv-grid"></div></div>
+    </section>
+    <section id="actions" class="actions" style="display:none;">
+      <button id="btnRecalc" type="button">Riport & döntés</button>
+      <span id="spinner" class="spinner" style="display:none;">Feldolgozás…</span>
+    </section>
+    <section id="result" class="card" style="display:none;">
+      <h2>Eredmény</h2>
+      <div class="pill-row">
+        <span class="pill" id="decision_code">–</span>
+        <span class="pill soft" id="risk_score">Risk: –</span>
+        <span class="pill soft" id="equity_value">Equity: –</span>
+      </div>
+      <pre id="resultJson"></pre>
+    </section>
+    <section id="debug" class="card soft" style="display:none;">
+      <h3>Debug</h3>
+      <pre id="debugText"></pre>
+    </section>
+  </main>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

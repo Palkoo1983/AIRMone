@@ -1,0 +1,1 @@
+window.BACKEND_ORIGIN = "https://YOUR_BACKEND.onrender.com";

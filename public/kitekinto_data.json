@@ -1,0 +1,34 @@
+{
+  "sectors": [
+    {
+      "title": "Építőipar",
+      "status": "sárga",
+      "note": "Anyagköltségek magasak, finanszírozás szigorúbb."
+    },
+    {
+      "title": "Kereskedelem",
+      "status": "zöld",
+      "note": "Forgalom stabil, készpénzhelyzet javul."
+    },
+    {
+      "title": "Gyártás",
+      "status": "sárga",
+      "note": "Készletfinanszírozás kulcstényező."
+    },
+    {
+      "title": "Szolgáltatások",
+      "status": "zöld",
+      "note": "Növekvő kereslet, alacsony CAPEX igény."
+    },
+    {
+      "title": "IT / SaaS",
+      "status": "zöld",
+      "note": "Előfizetéses modellek erősek, WCN kedvező."
+    },
+    {
+      "title": "Vendéglátás",
+      "status": "piros",
+      "note": "Szezonális kitettség, cash‑flow nyomás."
+    }
+  ]
+}

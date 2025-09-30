@@ -1,0 +1,61 @@
+<!doctype html><html lang="hu"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIRM – Kapcsolat</title>
+<link rel="stylesheet" href="/app.css">
+<link rel="stylesheet" href="../../static/overrides.css">
+  <link rel="stylesheet" href="/static/overrides.css">
+
+<style id="modern_bank_inline">
+:root{--bg:#f6f9fc;--surface:#fff;--ink:#0f172a;--muted:#5b677a;--brand:#0ea5e9;--accent:#10b981;--border:#e6ebf2;--radius:16px;--shadow:0 8px 30px rgba(2,12,27,.06)}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.6}
+header,nav,.navbar,.site-header{background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.container,main,section{max-width:1100px;margin:0 auto;padding:0 20px}
+section{margin:28px auto;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:16px;padding:28px}
+h1{font-size:clamp(28px,3vw,40px);margin:16px 0 8px;color:#0b1220}
+h2{font-size:clamp(22px,2.4vw,30px);margin:12px 0 6px;color:#111827}
+h3{font-size:clamp(18px,2vw,24px);margin:10px 0 4px;color:#1f2937}
+p,li{font-size:16.5px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:20px}
+button,.btn,input[type=submit]{background:var(--brand);color:#fff;border:none;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;transition:.2s}
+button:hover,.btn:hover,input[type=submit]:hover{transform:translateY(-1px);filter:brightness(.95)}
+input[type=text],input[type=email],input[type=file],select,textarea{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#fbfdff;color:var(--ink);outline:none;transition:border .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{border-color:#b6d9ff;box-shadow:0 0 0 4px rgba(99,164,255,.2)}
+.table,table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.table th,.table td,table th,table td{border-bottom:1px solid var(--border);padding:12px 14px;text-align:left}
+.table th,table th{background:#f3f7fd;color:#0b1220}
+footer{margin:24px 0 38px;color:var(--muted);text-align:center}
+.icon,.bi,.material-icons{font-size:24px} svg{width:28px;height:28px}
+img.avatar,img.profile,#profile,#about-photo,.about img,.hero img,.profile-photo{max-width:220px!important;border-radius:18px;box-shadow:var(--shadow)}
+a{color:#0b5fc0} a:hover{color:#084a99}
+.hr,hr{border:0;height:1px;background:var(--border);margin:20px 0}
+</style>
+
+</head><body>
+<main class="container">
+<h1>AIRM</h1>
+<nav><a href="/index.html">Bemutatkozó</a> • <a href="/kitekinto.html">Gazdasági kitekintő</a> • <a href="/arazas.html">Szolgáltatások</a> • <a href="/ellenorzes.html">Kockázatelemzés 1 perc alatt</a> • <a href="/kapcsolat.html">Kapcsolat</a></nav>
+<section class="card">
+  <h2>Kapcsolat</h2>
+  <div class="grid">
+    <div>
+      <p><b>Gombkötő Pál</b><br>
+      1097 Budapest, Aszódi utca 8. 123.<br>
+      Tel.: +36 30 515 1352<br>
+      E‑mail: <a href="mailto:paulsdiamond@gmail.com">paulsdiamond@gmail.com</a></p>
+    </div>
+    <div>
+      <form id="airmContactForm">
+        <label>Név<br><input name="Név" required></label><br><br>
+        <label>E‑mail<br><input type="email" name="Email" required></label><br><br>
+        <label>Üzenet<br><textarea rows="6" name="Üzenet" required></textarea></label><br><br>
+        <button type="submit" data-label="Üzenet küldése">Üzenet küldése</button>
+        <p class="airm-msg muted small"></p>
+      </form>
+      <p class="muted small"></p>
+    </div>
+  </div>
+</section>
+</main>
+<script src="/airm_forms.js"></script>
+<script>(function(){try{var L=document.querySelectorAll('nav a'),p=location.pathname.toLowerCase();L.forEach(a=>{var h=(a.getAttribute('href')||'').toLowerCase();if(p.endsWith(h))a.classList.add('active');if(h==='/index.html'&&(p==='/'||p==''))a.classList.add('active');});}catch(e){}})();</script>
+</body></html>
