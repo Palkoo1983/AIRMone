@@ -90,6 +90,9 @@ def airm_healthz():
     # egyszerű jelzés a front felé, hogy az AIRM rész "él"
     return {"airm": "ok"}
 
-@app.get("/healthz")
+@app.get("/healthz")@app.get("/airm/healthz", include_in_schema=False)
+def airm_healthz():
+    return {"airm": "ok"}
+
 def healthz():
     return {"status":"ok","static": PUBLIC_DIR.is_dir(),"airm_mounted": True}
