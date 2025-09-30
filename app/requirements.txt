@@ -1,3 +1,4 @@
+# === Curated, conflict-free requirements for AIRM Monorepo ===
 lxml==6.0.2
 pdfminer.six==20250506
 pdfplumber==0.11.7
@@ -6,5 +7,4 @@ pypdfium2==4.30.0
 python-docx==1.2.0
 python-multipart==0.0.20
 uvicorn==0.30.6
-uvicorn==0.37.0
 fastapi==0.118.0

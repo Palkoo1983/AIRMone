@@ -34,3 +34,7 @@ Kész. A "Kockázatelemzés" oldal az `/airm/ui`-t fogja betölteni iframe-ben.
 ## Render tip
 Ha a Render a gyökérben keresi a requirements.txt-t, ebben a v2 csomagban a gyökérben is van,
 amely a `requirements.txt`, amely az `app/requirements.txt`-re hivatkozik.
+
+
+## Dependencies note
+Egységesített verziók: FastAPI 0.118.0 + Uvicorn 0.30.6. Minden duplikált pin eltávolítva.
