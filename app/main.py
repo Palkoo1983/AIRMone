@@ -84,6 +84,11 @@ app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="public")
 
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR), html=False), name="extra_static")
+    
+@app.get("/airm/healthz", include_in_schema=False)
+def airm_healthz():
+    # egyszerű jelzés a front felé, hogy az AIRM rész "él"
+    return {"airm": "ok"}
 
 @app.get("/healthz")
 def healthz():
