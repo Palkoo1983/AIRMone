@@ -1,4 +1,3 @@
-# === Curated, conflict-free requirements for AIRM Monorepo ===
 lxml==6.0.2
 pdfminer.six==20250506
 pdfplumber==0.11.7
