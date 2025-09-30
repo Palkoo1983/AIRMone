@@ -92,7 +92,22 @@ def airm_routes():
         return [getattr(r, "path", "") for r in getattr(AIRM_APP, "routes", [])]
     except Exception:
         return []
+# --- UI-bridge: saját /airm/ui a fő appban, hogy mindig legyen látható UI.
+from fastapi.responses import HTMLResponse
 
+@app.get("/airm/ui", include_in_schema=False)
+def airm_ui_bridge():
+    # ha az AIRM al-app docs elérhető, azt ágyazzuk be; különben egyszerű tesztoldal
+    html = """
+    <!doctype html><html lang="hu"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>AIRM UI</title>
+    <style>html,body{height:100%;margin:0} iframe{width:100%;height:100%;border:0}</style>
+    </head><body>
+      <iframe src="/airm/docs" title="AIRM Docs"></iframe>
+    </body></html>
+    """
+    return HTMLResponse(html)
 app.mount("/airm", AIRM_APP)
 
 # --- 2) statikus site a gyökről
