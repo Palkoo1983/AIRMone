@@ -30,6 +30,35 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+-# /airm -> AIRM API
+-app.mount("/airm", airm_app)
+
+-# / -> statikus web
+-app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="site")
+
+-# Egészség-ellenőrzések
+-@app.get("/healthz")
+-def healthz():
+-    return {"ok": True, "public_exists": PUBLIC_DIR.is_dir(), "airm_mounted": True}
+
+-@app.get("/airm/healthz")
+-def airm_healthz():
+-    return {"ok": True}
+
++# Egészség-ellenőrzések (ELŐBB!)
++@app.get("/healthz")
++def healthz():
++    return {"ok": True, "public_exists": PUBLIC_DIR.is_dir(), "airm_mounted": True}
+
++@app.get("/airm/healthz")
++def airm_healthz():
++    return {"ok": True}
+
++# /airm -> AIRM API
++app.mount("/airm", airm_app)
+
++# / -> statikus web
++app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="site")
 
 # /airm -> AIRM API (docs: /airm/docs, openapi: /airm/openapi.json)
 app.mount("/airm", airm_app)
