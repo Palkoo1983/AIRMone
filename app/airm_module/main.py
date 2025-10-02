@@ -10,7 +10,6 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-# ---- FastAPI app (egyetlen példány!) ----
 app = FastAPI(
     title="AIRM backend",
     version="2025.10.02",
@@ -19,7 +18,6 @@ app = FastAPI(
     redoc_url=None,
 )
 
-# CORS (devben engedjük a *-ot; később szigorítható domain-listára)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,12 +26,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# (opcionális) saját statikus mappa az AIRM modulon BELÜL
 STATIC_DIR = (Path(__file__).parent / "static").resolve()
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="airm_static")
 
-# ----- innen mehet a meglévő AIRM kódod (endpointok, utilok, stb.) -----
+# ----- innen folytatódhat a meglévő AIRM kódod (endpointok, utilok, stb.) -----
 
 app = FastAPI(
     title="AIRM backend",
