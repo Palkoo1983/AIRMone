@@ -1,19 +1,39 @@
-# app/airm_module/main.py (részlet)
---- a/app/airm_module/main.py
-+++ b/app/airm_module/main.py
-@@
-import re, json, math
-from typing import Any, Dict, List, Optional, Tuple
+# app/airm_module/main.py — CLEAN HEADER
 
--from fastapi import FastAPI, UploadFile, File, HTTPException
-+from fastapi import FastAPI, UploadFile, File, HTTPException
-+import re
-from fastapi import FastAPI
+from pathlib import Path
+import json
+import math
+import re
+from typing import Any, Dict, List, Optional, Tuple, Set, Iterable, Union, Callable
+
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pathlib import Path
-import re, json, math
-from typing import Any, Dict, List, Optional, Tuple, Set, Iterable, Union, Callable
+
+# ---- FastAPI app (egyetlen példány!) ----
+app = FastAPI(
+    title="AIRM backend",
+    version="2025.10.02",
+    docs_url="/docs",
+    openapi_url="/openapi.json",
+    redoc_url=None,
+)
+
+# CORS (devben engedjük a *-ot; később szigorítható domain-listára)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# (opcionális) saját statikus mappa az AIRM modulon BELÜL
+STATIC_DIR = (Path(__file__).parent / "static").resolve()
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="airm_static")
+
+# ----- innen mehet a meglévő AIRM kódod (endpointok, utilok, stb.) -----
 
 app = FastAPI(
     title="AIRM backend",
