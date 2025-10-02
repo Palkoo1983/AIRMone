@@ -1,5 +1,10 @@
 # app/airm_module/main.py (részlet)
-import re
+--- a/app/airm_module/main.py
++++ b/app/airm_module/main.py
+@@
+-from fastapi import FastAPI, UploadFile, File, HTTPException
++from fastapi import FastAPI, UploadFile, File, HTTPException
++import re
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
