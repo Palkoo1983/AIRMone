@@ -1,4 +1,11 @@
 # app/airm_module/main.py — CLEAN HEADER
+--- a/app/airm_module/main.py
++++ b/app/airm_module/main.py
+@@
+ from fastapi import FastAPI, UploadFile, File, HTTPException
+ from fastapi.middleware.cors import CORSMiddleware
+ from fastapi.staticfiles import StaticFiles
++from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, FileResponse
 
 from pathlib import Path
 import json
