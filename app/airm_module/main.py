@@ -1,23 +1,26 @@
-
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+# app/airm_module/main.py (részlet)
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-import time, shutil, sys, importlib.util, traceback, re, json
-from typing import Dict, Any, List
-import pdfplumber
-from docx import Document
 
-BASE_DIR = Path(__file__).resolve().parent
-UPLOADS_DIR = BASE_DIR / "uploads"
-REPORTS_DIR = BASE_DIR / "reports"
-STATIC_DIR = BASE_DIR / "static"
-AIRM_DIR = BASE_DIR / "airm_src"
+app = FastAPI(
+    title="AIRM backend",
+    version="2025.09.29",
+    openapi_url="/openapi.json",
+    docs_url="/docs",      # fontos az iframe-hez
+    redoc_url=None
+)
 
-app = FastAPI(title="AIRM Web – golden", version="2025.09.29")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
+                   allow_methods=["*"], allow_headers=["*"])
+
+# ha van saját static-ja (pl. /airm/static/…):
+STATIC_DIR = Path(__file__).parent / "static"
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="airm_static")
+
+# ... (meglevő végpontjaid változatlanul) ...
 
 def ensure_dirs():
     UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
