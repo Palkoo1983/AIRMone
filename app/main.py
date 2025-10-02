@@ -1,126 +1,133 @@
- app/main.py  — CLEAN
-
-from pathlib import Path
-import importlib
+# app/main.py — UNIFIED entrypoint (static site + optional AIRM subapp)
+import os
+import sys
 import logging
+import importlib
+from pathlib import Path
+from typing import Optional
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
+# ------------------------------------------------------------------------------
+# Paths & logging
+# ------------------------------------------------------------------------------
 logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("airm-unified")
 
-app = FastAPI(
-    title="AIRM unified",
-    docs_url=None,
-    redoc_url=None,
-)
+BASE_DIR: Path = Path(__file__).parent.resolve()          # .../app
+ROOT_DIR: Path = BASE_DIR.parent.resolve()                 # repo root
+PUBLIC_DIR: Path = (ROOT_DIR / "public").resolve()         # .../public
+AIRM_PKG_DIR: Path = (BASE_DIR / "airm_module").resolve()  # .../app/airm_module
 
- CORS – ha kell szigorítani, itt tedd meg
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-    allow_credentials=True,
-)
-
-PUBLIC_DIR = (Path(__file__).parent / "public").resolve()
-
- ---- HEALTH ENDPOINTS ELŐSZÖR! (hogy ne nyelje el a "/" static mount) ----
-@app.get("/healthz")
-def healthz():
-    return {
-        "ok": True,
-        "public_exists": PUBLIC_DIR.is_dir(),
-    }
-
- ---- AIRM betöltés és mount ----
-airm_module = importlib.import_module("airm_module.main")
-airm_app = getattr(airm_module, "app")
-app.mount("/airm", airm_app)
-
----- Statikus site a gyökéren (ha van public/) ----
-if PUBLIC_DIR.is_dir():
-    app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="site")
-
-import pathlib, sys, importlib
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from starlette.middleware.cors import CORSMiddleware
-
-BASE_DIR = pathlib.Path(__file__).parent.resolve()
-PUBLIC_DIR = (BASE_DIR.parent / "public").resolve()
-AIRM_PKG_DIR = (BASE_DIR / "airm_module").resolve()
-
-import path guard
-for p in (str(BASE_DIR), str(AIRM_PKG_DIR), str(BASE_DIR.parent)):
+# Ensure import paths (idempotent)
+for p in (str(BASE_DIR), str(AIRM_PKG_DIR), str(ROOT_DIR)):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-1) AIRM alapp alkalmazás betöltése a meglévő modulból
-    Fontos: app/airm_module/main.py-ben legyen: `app = FastAPI(...)`
-airm_module = importlib.import_module("airm_module.main")
-airm_app = getattr(airm_module, "app", None)
-if airm_app is None:
-    raise RuntimeError("airm_module.main nem tartalmaz 'app' FastAPI objektumot")
+# ------------------------------------------------------------------------------
+# Main FastAPI app
+# ------------------------------------------------------------------------------
+app = FastAPI(
+    title="AIRM Unified",
+    version="2025.10.02",
+    docs_url=None,     # fő app Swagger kikapcs, hogy ne ütközzön a statikus gyökérrel
+    redoc_url=None,
+)
 
- 2) Fő integrátor app
-app = FastAPI(title="AIRM Unified", version="2025.10.02")
-
+# CORS (szigorítható domain-listára)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ha szigorítanád: konkrét domain lista
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-/airm -> AIRM API
-app.mount("/airm", airm_app)
 
- / -> statikus web
-app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="site")
-
-Egészség-ellenőrzések
-@app.get("/healthz")
-def healthz():
-    return {"ok": True, "public_exists": PUBLIC_DIR.is_dir(), "airm_mounted": True}
-
-@app.get("/airm/healthz")
-def airm_healthz():
-    return {"ok": True}
-
- Egészség-ellenőrzések (ELŐBB!)
-@app.get("/healthz")
-def healthz():
-    return {"ok": True, "public_exists": PUBLIC_DIR.is_dir(), "airm_mounted": True}
-
-@app.get("/airm/healthz")
-def airm_healthz():
-    return {"ok": True}
-
-/airm -> AIRM API
-app.mount("/airm", airm_app)
-
- / -> statikus web
-app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="site")
-
- /airm -> AIRM API (docs: /airm/docs, openapi: /airm/openapi.json)
-app.mount("/airm", airm_app)
-
- / -> statikus web (public/), multi-page HTML kiszolgálással
- fontos: public/index.html, public/*.html fájlok
-app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="site")
-
- Egyszerű egészség-ellenőrző végpontok
+# ------------------------------------------------------------------------------
+# Health endpoints (ELŐBB, hogy ne nyelje el a "/" mount)
+# ------------------------------------------------------------------------------
 @app.get("/healthz")
 def healthz():
     return {
         "ok": True,
         "public_exists": PUBLIC_DIR.is_dir(),
-        "airm_mounted": True
+        "airm_module_dir": str(AIRM_PKG_DIR),
+        "airm_mounted": hasattr(app, "_airm_mounted") and bool(getattr(app, "_airm_mounted")),
     }
 
+# opcionális: külön AIRM health, akkor is ad választ, ha nincs mount
 @app.get("/airm/healthz")
 def airm_healthz():
-    return {"ok": True}
+    mounted = hasattr(app, "_airm_mounted") and bool(getattr(app, "_airm_mounted"))
+    return {"ok": mounted}
+
+# ------------------------------------------------------------------------------
+# Try to import & mount AIRM sub-application under /airm (optional)
+# ------------------------------------------------------------------------------
+def try_mount_airm() -> Optional[FastAPI]:
+    """
+    Tries to import app/airm_module/main.py and get `app` from it.
+    On success, mounts it under /airm and returns the subapp, else None.
+    """
+    try:
+        airm_module = importlib.import_module("airm_module.main")
+    except Exception as e:
+        log.warning("AIRM module not found or failed to import: %s", e)
+        setattr(app, "_airm_mounted", False)
+        return None
+
+    subapp = getattr(airm_module, "app", None)
+    if subapp is None:
+        log.error("airm_module.main does not expose `app` FastAPI instance.")
+        setattr(app, "_airm_mounted", False)
+        return None
+
+    # Mount only once
+    if not (hasattr(app, "_airm_mounted") and getattr(app, "_airm_mounted")):
+        app.mount("/airm", subapp)
+        setattr(app, "_airm_mounted", True)
+        log.info("Mounted AIRM subapp at /airm")
+    return subapp
+
+try_mount_airm()
+
+# ------------------------------------------------------------------------------
+# Static site: serve /public as root (multi-page HTML)
+# ------------------------------------------------------------------------------
+# /static -> assets (CSS/JS/images) same dir as public: convenience alias
+if PUBLIC_DIR.is_dir():
+    app.mount("/static", StaticFiles(directory=str(PUBLIC_DIR)), name="static")
+else:
+    log.warning("Public dir does not exist: %s", PUBLIC_DIR)
+
+# Root route: serve index.html if exists (explicit endpoint)
+@app.get("/", include_in_schema=False)
+def root_index():
+    index_path = PUBLIC_DIR / "index.html"
+    if index_path.is_file():
+        return FileResponse(str(index_path))
+    return JSONResponse({"error": "index.html not found in /public"}, status_code=404)
+
+# Mount the whole public folder for multi-page HTML (AFTER health routes!)
+if PUBLIC_DIR.is_dir():
+    # html=True → index.html + clean URLs működnek
+    app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="site")
+    log.info("Mounted static site at / from %s", PUBLIC_DIR)
+else:
+    log.warning("Skipping static mount because public/ not found at: %s", PUBLIC_DIR)
+
+# ------------------------------------------------------------------------------
+# Optional debug: show resolved paths (helpful in Render logs)
+# ------------------------------------------------------------------------------
+@app.get("/_debug/paths")
+def debug_paths():
+    return {
+        "BASE_DIR": str(BASE_DIR),
+        "ROOT_DIR": str(ROOT_DIR),
+        "PUBLIC_DIR": str(PUBLIC_DIR),
+        "AIRM_PKG_DIR": str(AIRM_PKG_DIR),
+        "sys.path_head": sys.path[:5],
+    }
