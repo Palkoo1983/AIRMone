@@ -6,10 +6,36 @@ import importlib
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
+# app/airm_module/main.py  — CLEAN AIRM sub-application
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+
+# Fontos: NE legyen a fájl tetején semmilyen nem-kód szöveg vagy furcsa karakter (BOM, en-dash)!
+app = FastAPI(
+    title="AIRM Backend",
+    version="2025.10.02",
+    # A főapp (/app/main.py) docs_url-t kikapcsolta; itt meghagyhatjuk:
+    docs_url="/docs",
+    redoc_url=None,
+)
+
+@app.get("/healthz")
+def healthz():
+    return {"ok": True, "where": "airm_module"}
+
+# --- Példa végpontok (helyben maradhatnak, később cserélhetők a valódi AIRM logikára) ---
+
+@app.post("/analyze")
+async def analyze(file: UploadFile = File(...)):
+    # Itt majd jön a PDF→kalkuláció→eredmény logika
+    # Most csak visszaadjuk a fájlnevet, hogy lásd: működik a /airm
+    return {"ok": True, "filename": file.filename}
+
+@app.post("/report")
+async def report(file: UploadFile = File(...)):
+    # Itt jön majd a DOCX generálás
+    return {"ok": True, "report": "generated.docx (placeholder)"}
+
 
 # ------------------------------------------------------------------------------
 # Paths & logging
