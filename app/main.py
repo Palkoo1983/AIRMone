@@ -1,3 +1,28 @@
+# app/airm_module/main.py  — CLEAN AIRM sub-application (UTF-8, BOM NÉLKÜL!)
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+
+app = FastAPI(
+    title="AIRM Backend",
+    version="2025.10.02",
+    docs_url="/docs",
+    redoc_url=None,
+)
+
+@app.get("/healthz")
+def healthz():
+    return {"ok": True, "where": "airm_module"}
+
+@app.post("/analyze")
+async def analyze(file: UploadFile = File(...)):
+    # TODO: PDF→kalkuláció→eredmény
+    return {"ok": True, "filename": file.filename}
+
+@app.post("/report")
+async def report(file: UploadFile = File(...)):
+    # TODO: DOCX generálás
+    return {"ok": True, "report": "generated.docx (placeholder)"}
+
 # app/main.py — UNIFIED (fix: CORSMiddleware import + order)
 import sys, importlib, logging
 from pathlib import Path
